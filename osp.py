@@ -1,15 +1,18 @@
-from openstack import connection
+import openstack
 
-# Auth headers
-conn = connection.Connection(auth_url='AUTH_URL_HERE!',
-                   username='opentlc-mgr',
-                   password='REDACTED',
-                   user_domain_id='default',
-                   project_domain_id='default')
+# Enable debug
+openstack.enable_logging(debug=False)
 
-# Iterate over project list to find relevant ones
+conn = openstack.connect(cloud='blue')
+
+
+# Get VMs per project
 for project in conn.list_projects():
+    print("\
+        Project Name: {}\t \
+        Class Name: {}\t \
+        Student ID: {}\t".format(project.name, project.description.split(' ')[0], project.description.split(' ')[3]))
+    for vms in conn.list_servers(all_projects=True, filters={'project_id': project.id}):
+        print("\
+            Virtual Machines: {}\n".format(vms.name))
 
-    if "-project" in project.name:
-        print(project.name + "\t" + project.description)
-    
